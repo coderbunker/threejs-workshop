@@ -1,45 +1,48 @@
+
 (function () {
 
-   // get the html element
-   var webglEl = document.getElementById('webgl');
+    // get the html element
+    var webglEl = document.getElementById('webgl');
 
-   // if webgl is not supported, trigger an alert
-   if (!Detector.webgl) {
+    // if webgl is not supported, trigger an alert
+    if (!Detector.webgl) {
       Detector.addGetWebGLMessage(webglEl);
       return;
-   }
+    }
 
-   // Get the dimensions of the window
-   var width  = window.innerWidth,
+    // Get the dimensions of the window
+    var width  = window.innerWidth,
       height = window.innerHeight;
 
-   // Create a new threejs scene
-  scene = new THREE.Scene();
+    // Create a new threejs scene
+    scene = new THREE.Scene();
 
-   // Create a new camera to see the scene
-   camera = new THREE.PerspectiveCamera(45, width / height, 0.01, 1000);
-   camera.position.z = 1.5;
+    // Create a new camera to see the scene
+    camera = new THREE.PerspectiveCamera(45, width / height, 0.01, 1000);
+    camera.position.z = 1.5;
 
-   // Create the 3d object rendering
-   renderer = new THREE.WebGLRenderer();
-   renderer.setSize(width, height);
+    // Create the 3d object rendering
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(width, height);
 
-   //append it on the HTML
-   webglEl.appendChild(renderer.domElement);  
+    //append it on the HTML
+    webglEl.appendChild(renderer.domElement);  
 
-   controls = new THREE.TrackballControls(camera);
+    createParticleSystem();
 
-   function render() {
+    controls = new THREE.TrackballControls(camera);
+
+    function render() {
       // let the browser decide how much FPS it can calculate
       requestAnimationFrame(render);
       // render the 3d scene
       renderer.render(scene, camera);
       //update rendering according to mouse control  
       controls.update();
-   }
+    }
 
-   //start the recursive function to render it
-   render();
+    //start the recursive function to render it
+    render();
 }());
 
 
