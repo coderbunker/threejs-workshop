@@ -1,4 +1,4 @@
-     // create the particle variables
+// create the particle variables
 var particleCount = 1800,
     particles = new THREE.Geometry(),
     pMaterial = new THREE.ParticleBasicMaterial({
@@ -14,7 +14,7 @@ for (var p = 0; p < particleCount; p++) {
   var pX = Math.random() * 500 - 250,
       pY = Math.random() * 500 - 250,
       pZ = Math.random() * 500 - 250,
-      particle = new THREE.Vertex(
+      particle = new THREE.Vector3(
         new THREE.Vector3(pX, pY, pZ)
       );
 
@@ -23,9 +23,9 @@ for (var p = 0; p < particleCount; p++) {
 }
 
 // create the particle system
-var particleSystem = new THREE.ParticleSystem(
+particleSystem = new THREE.ParticleSystem(
     particles,
     pMaterial);
 
 // add it to the scene
-scene.addChild(particleSystem);
+scene.add(particleSystem);
