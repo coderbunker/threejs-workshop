@@ -12,7 +12,7 @@ Let’s fix both of those, one at a time.
 // create the particle variables
 var pMaterial = new THREE.ParticleBasicMaterial({
   color: 0xFFFFFF,
-  size: 20,
+  size: 1,
   map: THREE.ImageUtils.loadTexture(
     "https://raw.githubusercontent.com/codersfield/threejs-workshop/master/images/particle.png"
   ),

@@ -28,9 +28,10 @@
     //append it on the HTML
     webglEl.appendChild(renderer.domElement);  
 
-    createParticleSystem();
+    createParticleSystem3();
 
     controls = new THREE.TrackballControls(camera);
+    controls.noZoom = true;
 
     function render() {
       // let the browser decide how much FPS it can calculate
@@ -39,6 +40,8 @@
       renderer.render(scene, camera);
       //update rendering according to mouse control  
       controls.update();
+
+      updateParticleSystem();
     }
 
     //start the recursive function to render it
