@@ -1,0 +1,302 @@
+/*Hi everyone, in this workshop we will implement a 3d earth with stars around and textures integrated, have fun coding*/
+
+/*For starters, Here is the html we will use, it's a pretty simple one with some basic css to get you going
+and only focus on Three.js */
+
+<html>
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>WebGL Earth</title>
+   <style>
+      body { margin: 0; overflow: hidden; background-color: #000; }
+      .tm  { position: absolute; top: 10px; right: 10px; }
+      .webgl-error { font: 15px/30px monospace; text-align: center; color: #fff; margin: 50px; }
+      .webgl-error a { color: #fff; }
+    </style>
+</head>
+<body>
+   <div id="webgl"></div>
+
+
+
+
+   <script src="js/three.min.js"></script>
+   <script src="js/Detector.js"></script>
+   <script src="js/TrackballControls.js"></script>
+
+</body>
+
+
+/**/
+
+(function () {
+
+   // get the html element
+   var webglEl = document.getElementById('webgl');
+
+   // if webgl is not supported, trigger an alert
+   if (!Detector.webgl) {
+      Detector.addGetWebGLMessage(webglEl);
+      return;
+   }
+
+   // Get the dimensions of the window
+   var width  = window.innerWidth,
+      height = window.innerHeight;
+
+   // Create a new threejs scene
+   var scene = new THREE.Scene();
+
+   // Create a new camera to see the scene
+   var camera = new THREE.PerspectiveCamera(45, width / height, 0.01, 1000);
+   camera.position.z = 1.5;
+
+   // Create the 3d object rendering
+   var renderer = new THREE.WebGLRenderer();
+   renderer.setSize(width, height);
+
+   //append it on the HTML
+   webglEl.appendChild(renderer.domElement);
+
+   //start the recursive function to render it
+   render();
+
+   function render() {
+      // let the browser decide how much FPS it can calculate
+      requestAnimationFrame(render);
+      // render the 3d scene
+      renderer.render(scene, camera);
+   }
+
+}());
+
+
+/* */
+
+
+// Some variables definition 
+var radius   = 0.5,
+   segments = 32,
+   rotation = 6;
+   var sphere = createSphere(radius, segments);
+   sphere.rotation.y = rotation;
+   scene.add(sphere);
+
+
+
+/**/ 
+
+
+
+function createSphere(radius, segments) {
+      return new THREE.Mesh(
+            new THREE.SphereGeometry(radius, segments, segments),
+            new THREE.MeshPhongMaterial({
+               map:         THREE.ImageUtils.loadTexture('images/2_no_clouds_4k.jpg'),
+               bumpMap:     THREE.ImageUtils.loadTexture('images/elev_bump_4k.jpg'),
+               // Lod the bumping
+               bumpScale:   0.005,
+               specularMap: THREE.ImageUtils.loadTexture('images/water_4k.png'),
+               // And the specular light for water reflection
+               specular:    new THREE.Color('grey')
+
+               // Three.js takes care of everything
+            })
+
+
+/**/
+
+
+
+scene.add(new THREE.AmbientLight(0x333333));        
+    // 
+   var light = new THREE.DirectionalLight(0xffffff, 1);        
+   light.position.set(5,3,5);        
+   scene.add(light);        
+   var clouds = createClouds(radius, segments);        
+   clouds.rotation.y = rotation;        
+   scene.add(clouds)
+
+/**/
+
+
+function createClouds(radius, segments) {        
+      return new THREE.Mesh(        
+            new THREE.SphereGeometry(radius + 0.003, segments, segments),        
+            new THREE.MeshPhongMaterial({        
+               map:         THREE.ImageUtils.loadTexture('images/fair_clouds_4k.png'),        
+               transparent: true        
+            })
+            );
+           }
+
+ /**/
+
+
+  sphere.rotation.y += 0.0005;
+      clouds.rotation.y += 0.00045;
+
+/**/
+
+  var controls = new THREE.TrackballControls(camera);
+
+
+ /**/
+
+
+  //update rendering according to mouse control        
+     controls.update();
+
+
+   /**/
+
+
+   var stars = createStars(90, 64);
+   scene.add(stars);
+
+
+   /**/
+
+
+   function createStars(radius, segments) {
+      return new THREE.Mesh(
+            new THREE.SphereGeometry(radius, segments, segments),
+            new THREE.MeshBasicMaterial({
+
+               map:  THREE.ImageUtils.loadTexture('images/galaxy_starfield.png'),
+               side: THREE.BackSide
+            })                 
+     }    
+
+
+
+     // Maybe a particles system ??
+
+
+
+     // create the particle variables
+var particleCount = 1800,
+    particles = new THREE.Geometry(),
+    pMaterial = new THREE.ParticleBasicMaterial({
+      color: 0xFFFFFF,
+      size: 20
+    });
+
+// now create the individual particles
+for (var p = 0; p < particleCount; p++) {
+
+  // create a particle with random
+  // position values, -250 -> 250
+  var pX = Math.random() * 500 - 250,
+      pY = Math.random() * 500 - 250,
+      pZ = Math.random() * 500 - 250,
+      particle = new THREE.Vertex(
+        new THREE.Vector3(pX, pY, pZ)
+      );
+
+  // add it to the geometry
+  particles.vertices.push(particle);
+}
+
+// create the particle system
+var particleSystem = new THREE.ParticleSystem(
+    particles,
+    pMaterial);
+
+// add it to the scene
+scene.addChild(particleSystem);
+
+
+
+/*
+
+If you run that, you’ll notice two things:
+
+The particles are squares
+They don’t move
+Let’s fix both of those, one at a time.
+
+*/
+
+
+// create the particle variables
+var pMaterial = new THREE.ParticleBasicMaterial({
+  color: 0xFFFFFF,
+  size: 20,
+  map: THREE.ImageUtils.loadTexture(
+    "images/particle.png"
+  ),
+  blending: THREE.AdditiveBlending,
+  transparent: true
+});
+
+// also update the particle system to
+// sort the particles which enables
+// the behaviour we want
+particleSystem.sortParticles = true;
+
+
+// animation loop
+function update() {
+
+  // add some rotation to the system
+  particleSystem.rotation.y += 0.01;
+
+  // draw
+  renderer.render(scene, camera);
+
+  // set up the next call
+  requestAnimFrame(update);
+}
+
+// create a velocity vector
+particle.velocity = new THREE.Vector3(
+  0,              // x
+  -Math.random(), // y: random vel
+  0);             // z
+
+
+
+Next in our animation loop we’re going to pass over each particle and update its velocity and position as well as reset it should it go off the bottom of the screen:
+
+// animation loop
+function update() {
+
+  // add some rotation to the system
+  particleSystem.rotation.y += 0.01;
+
+  var pCount = particleCount;
+  while (pCount--) {
+
+    // get the particle
+    var particle =
+      particles.vertices[pCount];
+
+    // check if we need to reset
+    if (particle.position.y < -200) {
+      particle.position.y = 200;
+      particle.velocity.y = 0;
+    }
+
+    // update the velocity with
+    // a splat of randomniz
+    particle.velocity.y -= Math.random() * .1;
+
+    // and the position
+    particle.position.addSelf(
+      particle.velocity);
+  }
+
+  // flag to the particle system
+  // that we've changed its vertices.
+  particleSystem.
+    geometry.
+    __dirtyVertices = true;
+
+  // draw
+  renderer.render(scene, camera);
+
+  // set up the next call
+  requestAnimFrame(update);
+}
